@@ -1,0 +1,41 @@
+{
+  "lower": -1317.1327465820311,
+  "mean": 1.3790884080776762,
+  "provenance": {
+    "lower_percentile": 0.5,
+    "max_samples": 2000000,
+    "shape": [
+      590,
+      782,
+      1006
+    ],
+    "source": "/content/drive/MyDrive/parihaka_dino_unet/data/TrainingData_Image.segy",
+    "source_mtime_ns": 1748685414000000000,
+    "source_size": 1967327920,
+    "split_axis": "inline",
+    "train_range": [
+      146,
+      370
+    ],
+    "train_ranges": [
+      [
+        39,
+        99
+      ],
+      [
+        146,
+        370
+      ],
+      [
+        480,
+        550
+      ]
+    ],
+    "upper_percentile": 99.5,
+    "version": 2
+  },
+  "sample_count": 1320480,
+  "sample_stride": 6,
+  "std": 379.6490990177582,
+  "upper": 1321.6879956054674
+}

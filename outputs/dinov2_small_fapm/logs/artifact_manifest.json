@@ -1,0 +1,174 @@
+{
+  "schema_version": 1,
+  "model": "dino_unet",
+  "backbone": "facebook/dinov2-small",
+  "run_name": "dinov2_small_fapm-comparison-v2",
+  "parameters_total": 30242183,
+  "parameters_trainable_final": 15299591,
+  "split": {
+    "axis": "inline",
+    "axis_index": 0,
+    "shape": [
+      590,
+      782,
+      1006
+    ],
+    "parameters": {
+      "train": [
+        [
+          39,
+          99
+        ],
+        [
+          146,
+          370
+        ],
+        [
+          480,
+          550
+        ]
+      ],
+      "val": [
+        [
+          378,
+          472
+        ]
+      ],
+      "test": [
+        [
+          0,
+          31
+        ],
+        [
+          107,
+          138
+        ],
+        [
+          558,
+          590
+        ]
+      ],
+      "buffer": [
+        [
+          31,
+          39
+        ],
+        [
+          99,
+          107
+        ],
+        [
+          138,
+          146
+        ],
+        [
+          370,
+          378
+        ],
+        [
+          472,
+          480
+        ],
+        [
+          550,
+          558
+        ]
+      ]
+    },
+    "train_ranges": [
+      [
+        39,
+        99
+      ],
+      [
+        146,
+        370
+      ],
+      [
+        480,
+        550
+      ]
+    ],
+    "train": [
+      146,
+      370
+    ],
+    "val_ranges": [
+      [
+        378,
+        472
+      ]
+    ],
+    "val": [
+      378,
+      472
+    ],
+    "test_ranges": [
+      [
+        0,
+        31
+      ],
+      [
+        107,
+        138
+      ],
+      [
+        558,
+        590
+      ]
+    ],
+    "test": [
+      558,
+      590
+    ],
+    "buffer_ranges": [
+      [
+        31,
+        39
+      ],
+      [
+        99,
+        107
+      ],
+      [
+        138,
+        146
+      ],
+      [
+        370,
+        378
+      ],
+      [
+        472,
+        480
+      ],
+      [
+        550,
+        558
+      ]
+    ],
+    "buffer": [
+      31,
+      39
+    ]
+  },
+  "files": {
+    "split_inline.json": 1392,
+    "normalization_train_only.json": 746,
+    "logs/run_status.json": 80,
+    "logs/experiment_results.csv": 8686,
+    "logs/batch_losses.csv": 31682,
+    "logs/last_validation_metrics.json": 4494,
+    "logs/best_validation_metrics.json": 4493,
+    "checkpoints/best_model.pth": 243675260,
+    "checkpoints/last_model.pth": 243675260,
+    "figures/training_curves.png": 94039,
+    "figures/validation_confusion_matrix.png": 44497,
+    "figures/validation_prediction_qc.png": 2442382,
+    "logs/labeled_test_metrics.json": 3170,
+    "figures/labeled_test_confusion_matrix.png": 44410,
+    "figures/labeled_test_prediction_qc.png": 997628,
+    "logs/run_config.json": 4089
+  },
+  "missing": []
+}

@@ -1,0 +1,174 @@
+{
+  "schema_version": 1,
+  "model": "dinov3_fapm_unet",
+  "backbone": "facebook/dinov3-vits16-pretrain-lvd1689m",
+  "run_name": "dinov3_small_fapm-comparison-v2",
+  "parameters_total": 29782151,
+  "parameters_trainable_final": 29782151,
+  "split": {
+    "axis": "inline",
+    "axis_index": 0,
+    "shape": [
+      590,
+      782,
+      1006
+    ],
+    "parameters": {
+      "train": [
+        [
+          39,
+          99
+        ],
+        [
+          146,
+          370
+        ],
+        [
+          480,
+          550
+        ]
+      ],
+      "val": [
+        [
+          378,
+          472
+        ]
+      ],
+      "test": [
+        [
+          0,
+          31
+        ],
+        [
+          107,
+          138
+        ],
+        [
+          558,
+          590
+        ]
+      ],
+      "buffer": [
+        [
+          31,
+          39
+        ],
+        [
+          99,
+          107
+        ],
+        [
+          138,
+          146
+        ],
+        [
+          370,
+          378
+        ],
+        [
+          472,
+          480
+        ],
+        [
+          550,
+          558
+        ]
+      ]
+    },
+    "train_ranges": [
+      [
+        39,
+        99
+      ],
+      [
+        146,
+        370
+      ],
+      [
+        480,
+        550
+      ]
+    ],
+    "train": [
+      146,
+      370
+    ],
+    "val_ranges": [
+      [
+        378,
+        472
+      ]
+    ],
+    "val": [
+      378,
+      472
+    ],
+    "test_ranges": [
+      [
+        0,
+        31
+      ],
+      [
+        107,
+        138
+      ],
+      [
+        558,
+        590
+      ]
+    ],
+    "test": [
+      558,
+      590
+    ],
+    "buffer_ranges": [
+      [
+        31,
+        39
+      ],
+      [
+        99,
+        107
+      ],
+      [
+        138,
+        146
+      ],
+      [
+        370,
+        378
+      ],
+      [
+        472,
+        480
+      ],
+      [
+        550,
+        558
+      ]
+    ],
+    "buffer": [
+      31,
+      39
+    ]
+  },
+  "files": {
+    "split_inline.json": 1392,
+    "normalization_train_only.json": 746,
+    "logs/run_status.json": 80,
+    "logs/experiment_results.csv": 8664,
+    "logs/batch_losses.csv": 31709,
+    "logs/last_validation_metrics.json": 4499,
+    "logs/best_validation_metrics.json": 4492,
+    "checkpoints/best_model.pth": 357777811,
+    "checkpoints/last_model.pth": 357777811,
+    "figures/training_curves.png": 94269,
+    "figures/validation_confusion_matrix.png": 44403,
+    "figures/validation_prediction_qc.png": 2438376,
+    "logs/labeled_test_metrics.json": 3176,
+    "figures/labeled_test_confusion_matrix.png": 44627,
+    "figures/labeled_test_prediction_qc.png": 995769,
+    "logs/run_config.json": 4114
+  },
+  "missing": []
+}

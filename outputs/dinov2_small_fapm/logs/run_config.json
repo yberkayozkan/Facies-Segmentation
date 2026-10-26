@@ -1,0 +1,186 @@
+{
+  "seed": 42,
+  "project_root": "/content/drive/MyDrive/parihaka_dino_unet",
+  "data": {
+    "train_seismic": "data/TrainingData_Image.segy",
+    "train_labels": "data/TrainingData_Labels.segy",
+    "test1_seismic": "data/TestData_Image1.segy",
+    "test2_seismic": "data/TestData_Image2.segy",
+    "axis_order": "inline_crossline_depth"
+  },
+  "cache": {
+    "dir": "cache",
+    "mmap": true
+  },
+  "outputs": {
+    "dir": "outputs/comparison_v2/dinov2_small_fapm",
+    "checkpoints": "outputs/comparison_v2/dinov2_small_fapm/checkpoints",
+    "predictions": "outputs/comparison_v2/dinov2_small_fapm/predictions",
+    "logs": "outputs/comparison_v2/dinov2_small_fapm/logs",
+    "figures": "outputs/comparison_v2/dinov2_small_fapm/figures"
+  },
+  "tracking": {
+    "mlflow": {
+      "enabled": false,
+      "tracking_uri": "https://dagshub.com/dragnellstr/sismoML.mlflow",
+      "experiment_name": "parihaka-three-model-comparison-v2",
+      "run_name": "dinov2_small_fapm-comparison-v2",
+      "log_system_metrics": true,
+      "log_checkpoints": false
+    }
+  },
+  "split": {
+    "axis": "inline",
+    "train_fraction": 0.72,
+    "buffer_fraction": 0.04,
+    "val_fraction": 0.2,
+    "path": "outputs/comparison_v2/dinov2_small_fapm/split_inline.json",
+    "ranges": {
+      "train": [
+        [
+          39,
+          99
+        ],
+        [
+          146,
+          370
+        ],
+        [
+          480,
+          550
+        ]
+      ],
+      "val": [
+        [
+          378,
+          472
+        ]
+      ],
+      "test": [
+        [
+          0,
+          31
+        ],
+        [
+          107,
+          138
+        ],
+        [
+          558,
+          590
+        ]
+      ],
+      "buffer": [
+        [
+          31,
+          39
+        ],
+        [
+          99,
+          107
+        ],
+        [
+          138,
+          146
+        ],
+        [
+          370,
+          378
+        ],
+        [
+          472,
+          480
+        ],
+        [
+          550,
+          558
+        ]
+      ]
+    }
+  },
+  "normalization": {
+    "lower_percentile": 0.5,
+    "upper_percentile": 99.5,
+    "max_samples": 2000000,
+    "path": "outputs/comparison_v2/dinov2_small_fapm/normalization_train_only.json"
+  },
+  "model": {
+    "name": "dino_unet",
+    "num_classes": 6,
+    "input_size": 224,
+    "backbone": "facebook/dinov2-small",
+    "dino_layers": [
+      3,
+      6,
+      9,
+      12
+    ],
+    "decoder_channels": 256,
+    "freeze_encoder_epochs": 1,
+    "trainable_dino_blocks": 4,
+    "use_facies_query": true,
+    "query_beta": 0.25,
+    "gradient_checkpointing": false,
+    "use_fapm": true,
+    "fapm_context_channels": 128
+  },
+  "training": {
+    "epochs": 15,
+    "batch_size": 128,
+    "val_batch_size": 4,
+    "num_workers": 4,
+    "prefetch_factor": 4,
+    "persistent_workers": true,
+    "gradient_accumulation": 1,
+    "precision": "bf16",
+    "decoder_lr": 0.0001,
+    "encoder_lr": 1e-05,
+    "min_lr_ratio": 0.05,
+    "batch_log_interval": 1,
+    "weight_decay": 0.0001,
+    "warmup_epochs": 1,
+    "max_grad_norm": 1.0,
+    "resume": false,
+    "loss": "ce_lovasz",
+    "class_weights": "inverse_sqrt"
+  },
+  "dataset": {
+    "orientations": [
+      "inline",
+      "crossline"
+    ],
+    "patch_size": 224,
+    "random_crop": true,
+    "crop_strategy": "random_crop",
+    "class_aware_sampling": true,
+    "class_aware_fraction": 0.5,
+    "global_context_fraction": 0.25,
+    "samples_per_epoch": 4096,
+    "val_samples_per_epoch": null,
+    "random_sample_when_limited": true,
+    "require_all_orientations": true,
+    "balance_orientations": true
+  },
+  "feature_engineering": {
+    "mode": "amplitude_gradient_depth"
+  },
+  "augmentation": {
+    "horizontal_flip": true,
+    "rotation_degrees": 0.0,
+    "amplitude_scale": 0.05,
+    "intensity_shift": 0.03,
+    "gaussian_noise": 0.01
+  },
+  "inference": {
+    "tile_size": 224,
+    "tile_overlap": 0.35,
+    "global_context_weight": 0.2,
+    "alpha": 0.5,
+    "tta_horizontal_flip": false,
+    "save_probabilities": false
+  },
+  "validation": {
+    "mode": "full_inline",
+    "max_sections": 8
+  }
+}
