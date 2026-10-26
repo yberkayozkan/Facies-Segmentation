@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parihaka facies segmentation: final model comparison</title>
+<style>
+
+:root { color-scheme: light; }
+body { max-width: 900px; margin: 0 auto; padding: 48px 28px 80px; color: #182331; font: 17px/1.6 system-ui, Segoe UI, Arial, sans-serif; }
+h1, h2, h3 { line-height: 1.2; color: #102d46; }
+h1 { font-size: 2.5rem; margin-bottom: .7rem; }
+h2 { margin-top: 2.6rem; border-bottom: 1px solid #c9d4df; padding-bottom: .35rem; }
+h3 { margin-top: 2rem; }
+p { margin: 1rem 0; }
+table { border-collapse: collapse; width: 100%; margin: 1.4rem 0 1.8rem; font-size: .88rem; }
+th, td { border-bottom: 1px solid #dce4eb; padding: .58rem .55rem; text-align: right; vertical-align: top; }
+th:first-child, td:first-child { text-align: left; }
+th { background: #edf3f7; color: #183d58; }
+tr:nth-child(even) td { background: #f8fafc; }
+img { display: block; width: 100%; height: auto; margin: 1.1rem 0; border: 1px solid #e0e7ee; }
+a { color: #0871a8; }
+code { font: .9em Consolas, monospace; background: #f0f4f7; padding: .1em .25em; }
+pre { background: #102d46; color: #f4f8fb; padding: 1rem; overflow: auto; border-radius: 4px; }
+pre code { background: none; padding: 0; color: inherit; }
+@media print { body { max-width: none; padding: 0; font-size: 10pt; } h2,h3 { break-after: avoid; } table,img { break-inside: avoid; } a { color: #102d46; } }
+</style>
+</head>
+<body>
+<h1>Parihaka facies segmentation: final model comparison</h1>
+<p><strong>Models:</strong> DINOv2 small with FAPM, DINOv3 small with FAPM, and a seismic U-Net</p>
+<p><strong>Evaluation:</strong> shared spatial split of the labeled Parihaka volume</p>
+<h2>Executive summary</h2>
+<p>DINOv3 achieved the highest labeled test mIoU at <strong>0.8447</strong>, followed by DINOv2 at <strong>0.8325</strong> and U-Net at <strong>0.7635</strong>. DINOv3's advantage over DINOv2 is 0.0122 mIoU, while their best validation scores are nearly identical. DINOv3 also has the best test macro F1 and negative log likelihood (NLL).</p>
+<p>The difference between validation and test scores needs careful interpretation. Validation uses eight selected inlines, while test covers 94 complete inlines. Class 5 accounts for 0.042% of validation pixels and 1.733% of test pixels. All three models score higher on test than on validation, but that increase cannot be attributed to better generalization. This report describes one run per model and does not claim statistical significance.</p>
+<h2>1. Data and evaluation protocol</h2>
+<p>The labeled volume has shape <strong>590 × 782 × 1006</strong>, ordered as inline, crossline, and depth. The comparison uses a fixed spatial partition. Training contains 354 inlines in three blocks. Validation occupies <code>[378, 472)</code>, with eight full inlines selected for scoring. The labeled test set contains 94 full inlines in <code>[0, 31)</code>, <code>[107, 138)</code>, and <code>[558, 590)</code>. Six eight-inline buffer blocks separate the regions.</p>
+<p>The models receive 224 × 224 patches with amplitude, vertical gradient, and depth channels. Each run uses 15 epochs, 4,096 sampled training examples per epoch, and cross entropy with Lovasz loss. Validation and test predictions use overlapping tiles to cover complete inlines. Metrics are computed from an aggregate confusion matrix, so each evaluated pixel contributes once. The best checkpoint is selected by validation mIoU; test metrics are calculated after that selection.</p>
+<p>The downloaded artifacts passed <code>python scripts/audit_comparison_outputs.py outputs</code>. All three runs are marked complete. Each manifest lists the expected 16 files, their recorded sizes match the downloaded files, and the split and test inline lists agree across models.</p>
+<h2>2. Overall results</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Model</th>
+<th style="text-align: right;">Best validation mIoU</th>
+<th style="text-align: right;">Test mIoU</th>
+<th style="text-align: right;">Test macro F1</th>
+<th style="text-align: right;">Test pixel accuracy</th>
+<th style="text-align: right;">Test NLL</th>
+<th style="text-align: right;">Selected epoch</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">DINOv2 small with FAPM</td>
+<td style="text-align: right;"><strong>0.6749</strong></td>
+<td style="text-align: right;">0.8325</td>
+<td style="text-align: right;">0.9030</td>
+<td style="text-align: right;">0.9416</td>
+<td style="text-align: right;">0.1498</td>
+<td style="text-align: right;">14</td>
+</tr>
+<tr>
+<td style="text-align: left;">DINOv3 small with FAPM</td>
+<td style="text-align: right;">0.6748</td>
+<td style="text-align: right;"><strong>0.8447</strong></td>
+<td style="text-align: right;"><strong>0.9118</strong></td>
+<td style="text-align: right;"><strong>0.9447</strong></td>
+<td style="text-align: right;"><strong>0.1436</strong></td>
+<td style="text-align: right;">12</td>
+</tr>
+<tr>
+<td style="text-align: left;">Seismic U-Net</td>
+<td style="text-align: right;">0.6170</td>
+<td style="text-align: right;">0.7635</td>
+<td style="text-align: right;">0.8571</td>
+<td style="text-align: right;">0.9089</td>
+<td style="text-align: right;">0.2244</td>
+<td style="text-align: right;">15</td>
+</tr>
+</tbody>
+</table>
+<p>The two DINO models have essentially equal best validation mIoU. DINOv3 leads on the held-out test set by <strong>1.22 percentage points</strong> of mIoU. U-Net trails DINOv3 by <strong>8.13 percentage points</strong> on test mIoU. The ranking is consistent across test mIoU, macro F1, pixel accuracy, and NLL, but these are single-run comparisons.</p>
+<h2>3. Results by class</h2>
+<p>The values below are test IoU for the dataset's numeric class labels. They should not be read as geological facies names.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Model</th>
+<th style="text-align: right;">Class 1</th>
+<th style="text-align: right;">Class 2</th>
+<th style="text-align: right;">Class 3</th>
+<th style="text-align: right;">Class 4</th>
+<th style="text-align: right;">Class 5</th>
+<th style="text-align: right;">Class 6</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">DINOv2 small with FAPM</td>
+<td style="text-align: right;">0.9736</td>
+<td style="text-align: right;">0.8742</td>
+<td style="text-align: right;">0.8025</td>
+<td style="text-align: right;">0.9247</td>
+<td style="text-align: right;">0.5780</td>
+<td style="text-align: right;">0.8423</td>
+</tr>
+<tr>
+<td style="text-align: left;">DINOv3 small with FAPM</td>
+<td style="text-align: right;"><strong>0.9745</strong></td>
+<td style="text-align: right;"><strong>0.8799</strong></td>
+<td style="text-align: right;"><strong>0.8100</strong></td>
+<td style="text-align: right;"><strong>0.9301</strong></td>
+<td style="text-align: right;"><strong>0.6315</strong></td>
+<td style="text-align: right;"><strong>0.8424</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">Seismic U-Net</td>
+<td style="text-align: right;">0.9593</td>
+<td style="text-align: right;">0.8193</td>
+<td style="text-align: right;">0.7385</td>
+<td style="text-align: right;">0.8740</td>
+<td style="text-align: right;">0.4872</td>
+<td style="text-align: right;">0.7023</td>
+</tr>
+</tbody>
+</table>
+<p>Class 5 has the lowest test IoU for every model. DINOv3 improves its class 5 IoU by <strong>0.0535</strong> over DINOv2. The most frequent class 5 error is prediction as class 2: <strong>309,915</strong> pixels for DINOv2, <strong>227,436</strong> for DINOv3, and <strong>313,840</strong> for U-Net. The full confusion matrices are available in the linked figures below.</p>
+<h2>4. Class distribution across evaluation sets</h2>
+<p>The table gives each class's share of evaluated pixels. Class 3 and class 5 are substantially more common in test than in the selected validation inlines.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Set</th>
+<th style="text-align: right;">Class 1</th>
+<th style="text-align: right;">Class 2</th>
+<th style="text-align: right;">Class 3</th>
+<th style="text-align: right;">Class 4</th>
+<th style="text-align: right;">Class 5</th>
+<th style="text-align: right;">Class 6</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Validation</td>
+<td style="text-align: right;">19.291%</td>
+<td style="text-align: right;">40.728%</td>
+<td style="text-align: right;">1.547%</td>
+<td style="text-align: right;">29.164%</td>
+<td style="text-align: right;">0.042%</td>
+<td style="text-align: right;">9.228%</td>
+</tr>
+<tr>
+<td style="text-align: left;">Test</td>
+<td style="text-align: right;">16.003%</td>
+<td style="text-align: right;">42.344%</td>
+<td style="text-align: right;">6.122%</td>
+<td style="text-align: right;">26.599%</td>
+<td style="text-align: right;">1.733%</td>
+<td style="text-align: right;">7.198%</td>
+</tr>
+</tbody>
+</table>
+<p>Class 5 validation IoU is <strong>0.0417</strong> for DINOv2, <strong>0.0599</strong> for DINOv3, and <strong>0.0730</strong> for U-Net. The order reverses on test, where DINOv3 leads at 0.6315. The very small validation support for this class is a reason to avoid model selection or broad conclusions based on its validation IoU alone.</p>
+<h2>5. Training behavior and compute</h2>
+<p>The training curves show falling loss and rising validation mIoU for all three models. Validation improvement becomes modest in the later DINO epochs. U-Net continues to improve through its final epoch, which is also its selected checkpoint. DINOv2 selects epoch 14 and DINOv3 selects epoch 12. Epoch numbers in this report are one based.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Model</th>
+<th style="text-align: right;">Training batch</th>
+<th style="text-align: right;">Total parameters</th>
+<th style="text-align: right;">Recorded epoch time</th>
+<th style="text-align: right;">Peak GPU memory</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">DINOv2 small with FAPM</td>
+<td style="text-align: right;">128</td>
+<td style="text-align: right;">30.24 million</td>
+<td style="text-align: right;">8.24 minutes</td>
+<td style="text-align: right;">46.75 GB</td>
+</tr>
+<tr>
+<td style="text-align: left;">DINOv3 small with FAPM</td>
+<td style="text-align: right;">128</td>
+<td style="text-align: right;">29.78 million</td>
+<td style="text-align: right;">22.46 minutes</td>
+<td style="text-align: right;">47.18 GB</td>
+</tr>
+<tr>
+<td style="text-align: left;">Seismic U-Net</td>
+<td style="text-align: right;">256</td>
+<td style="text-align: right;">8.29 million</td>
+<td style="text-align: right;">9.90 minutes</td>
+<td style="text-align: right;">50.51 GB</td>
+</tr>
+</tbody>
+</table>
+<p>The times sum <code>epoch_time_sec</code> over 15 epochs. They exclude data preparation, final test evaluation, and Colab setup. Hardware identity and competing workload are not established by these artifacts, so the table is descriptive rather than a controlled speed benchmark. U-Net's training batch differs from the two DINO runs, which also affects optimization step count and limits a strict compute comparison.</p>
+<h2>6. Visual inspection</h2>
+<p>The three prediction previews use the same test inline, <strong>inline 0</strong>. In this example, the DINO predictions follow the main layered structures more continuously. The U-Net prediction contains more fragmented patches. This is a qualitative observation from one inline; the reported test metrics cover all 94.</p>
+<h3>DINOv2 small with FAPM</h3>
+<p><img alt="DINOv2 test inline 0: seismic section, label, and prediction" src="assets/dinov2_small_fapm_labeled_test_prediction_qc.png" /></p>
+<p><a href="assets/dinov2_small_fapm_training_curves.png">Training curves</a> · <a href="assets/dinov2_small_fapm_labeled_test_confusion_matrix.png">Test confusion matrix</a></p>
+<h3>DINOv3 small with FAPM</h3>
+<p><img alt="DINOv3 test inline 0: seismic section, label, and prediction" src="assets/dinov3_small_fapm_labeled_test_prediction_qc.png" /></p>
+<p><a href="assets/dinov3_small_fapm_training_curves.png">Training curves</a> · <a href="assets/dinov3_small_fapm_labeled_test_confusion_matrix.png">Test confusion matrix</a></p>
+<h3>Seismic U-Net</h3>
+<p><img alt="U-Net test inline 0: seismic section, label, and prediction" src="assets/seismic_unet_labeled_test_prediction_qc.png" /></p>
+<p><a href="assets/seismic_unet_training_curves.png">Training curves</a> · <a href="assets/seismic_unet_labeled_test_confusion_matrix.png">Test confusion matrix</a></p>
+<h2>7. Interpretation and limitations</h2>
+<p><strong>Class composition differs sharply.</strong> Validation has <strong>2,616 class 5 pixels among 6,293,536</strong>, while test has <strong>1,281,905 among 73,949,048</strong>. Their respective shares are <strong>0.042%</strong> and <strong>1.733%</strong>. The limited class 5 support in validation makes its class 5 IoU especially sensitive to which eight inlines were selected. The test set is larger and has a different class balance.</p>
+<p><strong>The spatial buffer is narrower than in the earlier protocol.</strong> The distributed test design uses eight-inline buffers. This keeps training, validation, and test in distinct physical regions, but nearby geological structures may still be correlated. The result should be interpreted as performance on this fixed spatial holdout, not as evidence of independence across all possible surveys.</p>
+<p><strong>The runs are not identical in every training setting.</strong> The U-Net batch size is 256, compared with 128 for the two DINO models. The models also differ in architecture and parameter count by design. All three share the data split and evaluation method, which supports a direct comparison of their recorded predictions, but a controlled architecture ablation would require additional matched runs.</p>
+<p><strong>Uncertainty is not measured.</strong> There is one completed run per model and one fixed split. No confidence interval, seed variance, or statistical test is available. The 0.0122 mIoU difference between DINOv3 and DINOv2 should therefore be treated as an observed result, not a guaranteed performance advantage.</p>
+<h2>Conclusion</h2>
+<p>DINOv3 has the strongest recorded test performance in this comparison, including the best result on the difficult class 5. DINOv2 is close on validation and test mIoU. U-Net is smaller and remains a useful baseline, but its test score is lower. The next experiment that would most improve confidence is a repeated comparison with matched batch settings and additional spatial splits or seeds.</p>
+</body>
+</html>
